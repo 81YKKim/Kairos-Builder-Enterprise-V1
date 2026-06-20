@@ -1,4 +1,5 @@
-﻿from builder.generator.domain import DomainGenerator
+import pytest
+from builder.generator.domain import DomainGenerator
 from builder.generator.project_generator import ProjectGenerator
 from builder.generator.repository_generator import RepositoryGenerator
 from builder.generator.service import ServiceGenerator
@@ -32,3 +33,10 @@ def test_default_registry_creates_all_v1_generators():
     assert isinstance(registry.create("unit_test"), UnitTestGenerator)
     assert isinstance(registry.create("project"), ProjectGenerator)
     assert isinstance(registry.create("repository"), RepositoryGenerator)
+
+
+def test_generator_registry_unknown_generator():
+    registry = GeneratorRegistry()
+
+    with pytest.raises(Exception, match="Unknown generator"):
+        registry.create("unknown")
