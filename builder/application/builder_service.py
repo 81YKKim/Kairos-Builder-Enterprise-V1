@@ -1,5 +1,6 @@
 ﻿from pathlib import Path
 
+from builder.context.project_context import ProjectContext
 from builder.generator.factory import Factory
 from builder.workflow.builder_workflow import BuilderWorkflow
 
@@ -9,9 +10,11 @@ class BuilderService:
         self,
         factory: Factory | None = None,
         workflow: BuilderWorkflow | None = None,
+        context: ProjectContext | None = None,
     ) -> None:
         self.factory = factory or Factory()
         self.workflow = workflow or BuilderWorkflow()
+        self.context = context or ProjectContext()
 
     def create_project(self, name: str, output_root: str = "output/projects") -> Path:
         generator = self.factory.create("project")
@@ -27,3 +30,9 @@ class BuilderService:
     def workflow_commit_message(self, scope: str, message: str) -> str:
         plan = self.workflow.plan_commit("feat", scope, message)
         return plan["commit_message"]
+
+    def project_version(self) -> str:
+        return self.context.version()
+
+    def project_sprint(self) -> int:
+        return self.context.current_sprint()
