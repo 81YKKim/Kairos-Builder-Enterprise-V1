@@ -1,5 +1,8 @@
 ﻿from builder.generator.domain import DomainGenerator
 from builder.generator.project_generator import ProjectGenerator
+from builder.generator.repository_generator import RepositoryGenerator
+from builder.generator.service import ServiceGenerator
+from builder.generator.unit_test import UnitTestGenerator
 from builder.generator.registry import GeneratorRegistry, default_registry
 
 
@@ -19,3 +22,13 @@ def test_default_registry_creates_project_generator():
     generator = registry.create("project")
 
     assert isinstance(generator, ProjectGenerator)
+
+
+def test_default_registry_creates_all_v1_generators():
+    registry = default_registry()
+
+    assert isinstance(registry.create("domain"), DomainGenerator)
+    assert isinstance(registry.create("service"), ServiceGenerator)
+    assert isinstance(registry.create("unit_test"), UnitTestGenerator)
+    assert isinstance(registry.create("project"), ProjectGenerator)
+    assert isinstance(registry.create("repository"), RepositoryGenerator)
