@@ -14,7 +14,7 @@ class GeneratorRegistry:
 
     def create(self, name):
         if name not in self._generators:
-            raise Exception("Unknown generator")
+            raise ValueError("Unknown generator")
 
         return self._generators[name]()
 

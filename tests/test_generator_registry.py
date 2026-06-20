@@ -38,5 +38,5 @@ def test_default_registry_creates_all_v1_generators():
 def test_generator_registry_unknown_generator():
     registry = GeneratorRegistry()
 
-    with pytest.raises(Exception, match="Unknown generator"):
+    with pytest.raises(ValueError, match="Unknown generator"):
         registry.create("unknown")
