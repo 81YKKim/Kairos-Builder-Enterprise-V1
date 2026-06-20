@@ -1,5 +1,5 @@
 ﻿from builder.generator.domain import DomainGenerator
-from builder.generator.project import ProjectGenerator
+from builder.generator.project_generator import ProjectGenerator
 
 
 class GeneratorRegistry:
