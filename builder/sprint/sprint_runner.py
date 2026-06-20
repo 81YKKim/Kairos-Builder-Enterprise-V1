@@ -17,8 +17,13 @@ class SprintRunner:
         return f"Sprint #{sprint_number:06d} commit completed"
 
     def run(self, sprint_number: int) -> str:
-        self.create(sprint_number)
-        self.verify(sprint_number)
-        self.commit(sprint_number)
+        steps = (
+            self.create,
+            self.verify,
+            self.commit,
+        )
+
+        for step in steps:
+            step(sprint_number)
 
         return f"Sprint #{sprint_number:06d} run completed"

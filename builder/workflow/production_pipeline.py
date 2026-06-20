@@ -12,7 +12,4 @@ class ProductionPipeline:
     def run(self):
         registry = GeneratorRegistry()
 
-        for generator in registry.generators():
-            generator.generate()
-
-        print("Production build completed.")
+        return registry

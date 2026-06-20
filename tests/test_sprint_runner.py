@@ -3,9 +3,12 @@ from builder.cli.command_router import CommandRouter
 
 
 def test_sprint_runner_can_run():
-    result = SprintRunner().run(34)
+    runner = SprintRunner()
 
-    assert result == "Sprint #000034 run completed"
+    assert runner.create(34) == "Sprint #000034 create completed"
+    assert runner.verify(34) == "Sprint #000034 verify completed"
+    assert runner.commit(34) == "Sprint #000034 commit completed"
+    assert runner.run(34) == "Sprint #000034 run completed"
 
 
 def test_command_router_supports_sprint_run():

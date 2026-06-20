@@ -8,3 +8,9 @@ def test_pipeline_exists():
 
 def test_pipeline_has_run():
     assert hasattr(ProductionPipeline(), "run")
+
+
+def test_pipeline_run_returns_none():
+    pipeline = ProductionPipeline()
+
+    assert pipeline.run() is not None
