@@ -1,9 +1,11 @@
 ﻿from builder.generator.factory import Factory
+from builder.workflow.builder_workflow import BuilderWorkflow
 
 
 class CommandRouter:
     def __init__(self):
         self.factory = Factory()
+        self.workflow = BuilderWorkflow()
 
     def handle(self, command: str):
         parts = command.strip().split()
@@ -13,6 +15,13 @@ class CommandRouter:
 
         if parts[0] in ("exit", "quit"):
             return "exit"
+
+        if parts == ["workflow", "verify"]:
+            return "\n".join(self.workflow.verify_plan())
+
+        if len(parts) == 4 and parts[0] == "workflow" and parts[1] == "commit":
+            plan = self.workflow.plan_commit("feat", parts[2], parts[3])
+            return plan["commit_message"]
 
         if len(parts) == 3 and parts[0] == "generate":
             generator_type = parts[1]
