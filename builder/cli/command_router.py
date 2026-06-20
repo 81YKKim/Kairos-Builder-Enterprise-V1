@@ -1,4 +1,5 @@
-﻿from builder.application.builder_service import BuilderService
+from builder.application.builder_service import BuilderService
+from builder.sprint.sprint_runner import SprintRunner
 
 
 class CommandRouter:
@@ -25,5 +26,8 @@ class CommandRouter:
 
         if len(parts) == 2 and parts[0] == "project":
             return self.service.create_project(parts[1])
+
+        if len(parts) == 3 and parts[0] == "sprint" and parts[1] == "run":
+            return SprintRunner().run(int(parts[2]))
 
         return f"Unknown command: {command}"
