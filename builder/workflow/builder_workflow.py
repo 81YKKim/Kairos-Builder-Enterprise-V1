@@ -1,9 +1,15 @@
-﻿from builder.sprint.sprint_manager import SprintManager
+﻿from builder.context.project_context import ProjectContext
+from builder.sprint.sprint_manager import SprintManager
 
 
 class BuilderWorkflow:
-    def __init__(self, sprint_manager: SprintManager | None = None) -> None:
+    def __init__(
+        self,
+        sprint_manager: SprintManager | None = None,
+        context: ProjectContext | None = None,
+    ) -> None:
         self.sprint_manager = sprint_manager or SprintManager()
+        self.context = context or ProjectContext()
 
     def plan_commit(self, commit_type: str, scope: str, message: str) -> dict:
         commit_message = self.sprint_manager.build_commit_message(
@@ -28,3 +34,9 @@ class BuilderWorkflow:
             "pytest",
             "git status",
         ]
+
+    def current_sprint(self) -> int:
+        return self.context.current_sprint()
+
+    def project_version(self) -> str:
+        return self.context.version()
