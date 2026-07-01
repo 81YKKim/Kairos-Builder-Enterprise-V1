@@ -1,4 +1,5 @@
-﻿from builder.generator.domain import DomainGenerator
+﻿from builder.generator.desktop_generator import DesktopGenerator
+from builder.generator.domain import DomainGenerator
 from builder.generator.project_generator import ProjectGenerator
 from builder.generator.repository_generator import RepositoryGenerator
 from builder.generator.service import ServiceGenerator
@@ -18,9 +19,13 @@ class GeneratorRegistry:
 
         return self._generators[name]()
 
+    def names(self):
+        return tuple(sorted(self._generators.keys()))
+
 
 def default_registry():
     registry = GeneratorRegistry()
+    registry.register("desktop", DesktopGenerator)
     registry.register("domain", DomainGenerator)
     registry.register("service", ServiceGenerator)
     registry.register("unit_test", UnitTestGenerator)
