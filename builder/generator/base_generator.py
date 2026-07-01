@@ -25,4 +25,24 @@ class BaseGenerator:
 
     def to_class_name(self, name: str) -> str:
         cleaned = name.replace("-", "_").replace(" ", "_")
-        return "".join(part.capitalize() for part in cleaned.split("_") if part)
+
+        if "_" in cleaned:
+            return "".join(
+                part[:1].upper() + part[1:]
+                for part in cleaned.split("_")
+                if part
+            )
+
+        return cleaned[:1].upper() + cleaned[1:]
+
+    def to_snake_name(self, name: str) -> str:
+        cleaned = name.replace("-", "_").replace(" ", "_")
+        result = []
+
+        for index, char in enumerate(cleaned):
+            previous = cleaned[index - 1] if index > 0 else ""
+            if char.isupper() and index > 0 and previous != "_":
+                result.append("_")
+            result.append(char.lower())
+
+        return "".join(result).strip("_")
