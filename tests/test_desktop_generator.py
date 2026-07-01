@@ -8,15 +8,19 @@ def test_desktop_generator_creates_enterprise_desktop_foundation(tmp_path: Path)
     result = DesktopGenerator().generate("KairosDesktop", str(tmp_path))
 
     assert result.project_name == "KairosDesktop"
-    assert result.generated_count == 10
-    assert (result.project_path / "src" / "desktop" / "app.py").exists()
-    assert (result.project_path / "src" / "desktop" / "main_window.py").exists()
-    assert (result.project_path / "src" / "desktop" / "theme.py").exists()
-    assert (result.project_path / "src" / "desktop" / "widgets" / "__init__.py").exists()
-    assert (result.project_path / "src" / "desktop" / "services" / "__init__.py").exists()
-    assert (result.project_path / "src" / "desktop" / "viewmodels" / "__init__.py").exists()
-    assert (result.project_path / "src" / "desktop" / "adapters" / "__init__.py").exists()
-    assert (result.project_path / "tests" / "test_desktop_foundation.py").exists()
+    assert result.generated_count == 5
+
+    assert result.page_count == 1
+    assert result.widget_count == 1
+    assert result.viewmodel_count == 1
+    assert result.service_count == 1
+    assert result.adapter_count == 1
+
+    assert (result.project_path / "src" / "desktop" / "pages" / "dashboard.py").exists()
+    assert (result.project_path / "src" / "desktop" / "widgets" / "recommendation_table.py").exists()
+    assert (result.project_path / "src" / "desktop" / "viewmodels" / "dashboard_view_model.py").exists()
+    assert (result.project_path / "src" / "desktop" / "services" / "market_service.py").exists()
+    assert (result.project_path / "src" / "desktop" / "adapters" / "replay_adapter.py").exists()
 
 
 def test_default_registry_supports_desktop_generator():

@@ -1,65 +1,86 @@
-﻿from pathlib import Path
+﻿from __future__ import annotations
 
+from pathlib import Path
+
+from builder.generator.adapter_generator import AdapterGenerator
+from builder.generator.composite_generator import CompositeGenerator
 from builder.generator.desktop_generator_result import DesktopGeneratorResult
-from builder.template.engine import TemplateEngine
+from builder.generator.page_generator import PageGenerator
+from builder.generator.service import ServiceGenerator
+from builder.generator.viewmodel_generator import ViewModelGenerator
+from builder.generator.widget_generator import WidgetGenerator
 
 
-class DesktopGenerator:
-    def __init__(self):
-        self.engine = TemplateEngine()
+class DesktopGenerator(CompositeGenerator):
+    category = "desktop"
 
-    def generate(self, name: str, output_root: str = "output/desktop") -> DesktopGeneratorResult:
-        project_path = Path(output_root) / name
-        desktop_path = project_path / "src" / "desktop"
-        tests_path = project_path / "tests"
+    def generate(
+        self,
+        name: str,
+        output_root: str = "output/desktop",
+    ) -> DesktopGeneratorResult:
+        project_root = self.create_project_root(output_root, name)
 
-        folders = [
-            desktop_path,
-            desktop_path / "widgets",
-            desktop_path / "services",
-            desktop_path / "viewmodels",
-            desktop_path / "adapters",
-            desktop_path / "pages",
-            tests_path,
-        ]
+        src_root = project_root / "src" / "desktop"
+        tests_root = project_root / "tests"
 
-        for folder in folders:
-            folder.mkdir(parents=True, exist_ok=True)
+        self.create_folders(
+            [
+                src_root,
+                src_root / "pages",
+                src_root / "widgets",
+                src_root / "viewmodels",
+                src_root / "services",
+                src_root / "adapters",
+                tests_root,
+            ]
+        )
 
-        context = {
-            "project_name": name,
-            "class_name": self._to_class_name(name),
-        }
+        page = self.run_generator(
+            PageGenerator(),
+            "Dashboard",
+            src_root / "pages",
+        )
 
-        files = {
-            desktop_path / "__init__.py": '"""Generated desktop package."""\n',
-            desktop_path / "app.py": self.engine.render("templates/desktop/app.tpl", context),
-            desktop_path / "main_window.py": self.engine.render("templates/desktop/main_window.tpl", context),
-            desktop_path / "theme.py": self.engine.render("templates/desktop/theme.tpl", context),
-            desktop_path / "widgets" / "__init__.py": '"""Generated desktop widgets."""\n',
-            desktop_path / "services" / "__init__.py": '"""Generated desktop services."""\n',
-            desktop_path / "viewmodels" / "__init__.py": '"""Generated desktop viewmodels."""\n',
-            desktop_path / "adapters" / "__init__.py": '"""Generated desktop adapters."""\n',
-            desktop_path / "pages" / "__init__.py": '"""Generated desktop pages."""\n',
-            tests_path / "test_desktop_foundation.py": self.engine.render(
-                "templates/desktop/test_desktop_foundation.tpl",
-                context,
-            ),
-        }
+        widget = self.run_generator(
+            WidgetGenerator(),
+            "RecommendationTable",
+            src_root / "widgets",
+        )
 
-        generated_files = []
+        viewmodel = self.run_generator(
+            ViewModelGenerator(),
+            "DashboardViewModel",
+            src_root / "viewmodels",
+        )
 
-        for path, content in files.items():
-            path.write_text(content, encoding="utf-8")
-            generated_files.append(path)
+        service = self.run_generator(
+            ServiceGenerator(),
+            "Market",
+            src_root / "services",
+        )
+
+        adapter = self.run_generator(
+            AdapterGenerator(),
+            "ReplayAdapter",
+            src_root / "adapters",
+        )
+
+        generated = self.collect_results(
+            page,
+            widget,
+            viewmodel,
+            service,
+            adapter,
+        )
 
         return DesktopGeneratorResult(
             project_name=name,
-            project_path=project_path,
-            generated_files=tuple(generated_files),
+            project_path=project_root,
+            generated_pages=(page,),
+            generated_widgets=(widget,),
+            generated_viewmodels=(viewmodel,),
+            generated_services=(service,),
+            generated_adapters=(adapter,),
+            generated_files=generated,
         )
-
-    @staticmethod
-    def _to_class_name(name: str) -> str:
-        cleaned = name.replace("-", "_").replace(" ", "_")
-        return "".join(part.capitalize() for part in cleaned.split("_") if part)
