@@ -1,5 +1,6 @@
 ﻿from __future__ import annotations
 
+from datetime import UTC, datetime
 from pathlib import Path
 
 from builder.generator.adapter_generator import AdapterGenerator
@@ -9,6 +10,8 @@ from builder.generator.page_generator import PageGenerator
 from builder.generator.service import ServiceGenerator
 from builder.generator.viewmodel_generator import ViewModelGenerator
 from builder.generator.widget_generator import WidgetGenerator
+from builder.manifest.desktop_manifest import DesktopManifest
+from builder.manifest.desktop_manifest_writer import DesktopManifestWriter
 
 
 class DesktopGenerator(CompositeGenerator):
@@ -19,6 +22,7 @@ class DesktopGenerator(CompositeGenerator):
         name: str,
         output_root: str = "output/desktop",
     ) -> DesktopGeneratorResult:
+
         project_root = self.create_project_root(output_root, name)
 
         src_root = project_root / "src" / "desktop"
@@ -72,6 +76,24 @@ class DesktopGenerator(CompositeGenerator):
             viewmodel,
             service,
             adapter,
+        )
+
+        manifest = DesktopManifest(
+            project_name=name,
+            builder_version="2.0.0-alpha",
+            generator="DesktopGenerator",
+            architecture="MVVM",
+            created_at=datetime.now(UTC).isoformat(),
+            pages=1,
+            widgets=1,
+            viewmodels=1,
+            services=1,
+            adapters=1,
+        )
+
+        DesktopManifestWriter().write(
+            manifest,
+            project_root,
         )
 
         return DesktopGeneratorResult(
